@@ -24,10 +24,9 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         logging.getLogger("root").warning(
             "Running in DEVELOPMENT mode. Do not use this in production!"
         )
-        logging.getLogger("root").info(
-            "running database migrations..."
-        )
+        logging.getLogger("root").info("running database migrations...")
         from orion.core.database.db import get_database
+
         get_database().migrate()
     yield
     logging.getLogger("root").info("ORION APP STOPPED")
