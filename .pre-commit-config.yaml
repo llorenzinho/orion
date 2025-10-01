@@ -27,7 +27,7 @@ repos:
     hooks:
       - id: pyright
         name: Type Checking
-        entry: npx pyright src/orion
+        entry: npx pyright orion
         language: node
         types: 
           - python
