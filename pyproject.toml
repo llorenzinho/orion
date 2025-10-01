@@ -1,0 +1,74 @@
+[project]
+name = "orion"
+version = "0.0.1"
+description = ""
+authors = [
+    {name = "l.dagostino",email = "l.dagostino@recrytera.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12,<4.0"
+dependencies = [
+    "fastapi (>=0.118.0,<0.119.0)",
+    "pydantic (>=2.11.9,<3.0.0)",
+    "pydantic-settings (>=2.11.0,<3.0.0)",
+    "uvicorn (>=0.37.0,<0.38.0)",
+    "sqlmodel (>=0.0.25,<0.0.26)",
+    "python-json-logger (>=3.3.0,<4.0.0)",
+    "fastapi-users[jwt,oauth,sqlalchemy] (>=14.0.1,<15.0.0)",
+    "authlib (>=1.6.4,<2.0.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "passlib[bcrypt] (>=1.7.4,<2.0.0)",
+    "python-jose (>=3.5.0,<4.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "orion"}]
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.9.0"
+isort = "^6.0.1"
+autoflake = "^2.3.1"
+invoke = "^2.2.0"
+commitizen = "^4.9.1"
+pre-commit = "^4.3.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version_scheme = "semver"
+bump_message = "chore(release): bump version $current_version → $new_version"
+update_changelog_on_bump = true
+version="0.0.1"
+changelog_file = "CHANGELOG.md"
+changelog_incremental = true
+version_files = [
+    "pyproject.toml:^version",
+    "src/orion/core/constants.py:APP_VERSION",
+    ""
+]
+
+[tool.autoflake]
+expand-star-imports = true
+remove-all-unused-imports = true
+recursive = true
+remove-unused-variables = true
+in-place = true
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+no_lines_before = "LOCALFOLDER"
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 88
+
+[tool.black]
+line-length = 88
+skip-string-normalization = true
+target-version = ["py312"]

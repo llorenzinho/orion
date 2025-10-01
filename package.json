@@ -1,0 +1,13 @@
+{
+  "name": "orion",
+  "description": "",
+  "directories": {},
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "pyright": "^1.1.405"
+  }
+}
