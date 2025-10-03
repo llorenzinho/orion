@@ -6,6 +6,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from orion.core.enums import Environment, LogLevel
 
 
+class JwtConfig(BaseModel):
+    secret: str = ""
+    lifetime_seconds: int = 3600
+
+
 class LogConfig(BaseModel):
     level: LogLevel = LogLevel.INFO
     format: str = "[%(asctime)s] [%(levelname)s] [%(name)s] | %(message)s"
@@ -73,6 +78,7 @@ class AppSettings(BaseSettings):
     log: LogConfig
     server: ServerConfig
     db: DatabaseConfig
+    jwt: JwtConfig
 
 
 @lru_cache

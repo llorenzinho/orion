@@ -1,9 +1,11 @@
-from contextlib import contextmanager
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from functools import lru_cache
 
-from sqlmodel import Session, SQLModel, text
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from orion.core.database.engine import get_engine
+from orion.core.database.engine import Base, get_engine, session_maker
 from orion.core.exceptions import DatabaseConnectionError
 from orion.core.log import get_logger
 
@@ -13,26 +15,27 @@ class Database:
         self.log = get_logger(__name__)
 
     @property
-    @contextmanager
-    def session(self):
+    @asynccontextmanager
+    async def session(self) -> AsyncGenerator[AsyncSession, None]:
         self.log.debug("Opening new database session")
-        with Session(get_engine()) as session:
-            yield session
+        async with session_maker()() as s:
+            yield s
         self.log.debug("Database session closed")
 
-    def ping(self):
+    async def ping(self):
         try:
-            with self.session as session:
+            async with self.session as session:
                 select_stmt = text("SELECT 1")
-                result = session.exec(select_stmt)  # type: ignore
-                res = result.scalar()
+                result = session.execute(select_stmt)
+                res = result
                 self.log.debug(f"Database connection test successful: {res}")
         except Exception as e:
             self.log.error(f"Database connection test failed: {e}")
             raise DatabaseConnectionError("Failed to connect to the database") from e
 
-    def migrate(self):
-        SQLModel.metadata.create_all(get_engine())
+    async def migrate(self):
+        async with get_engine().begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
 
 
 @lru_cache

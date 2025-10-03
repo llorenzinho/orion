@@ -21,3 +21,5 @@ class DatabaseType(str, Enum):
 
 class OpenapiTags(str, Enum):
     SYSTEM = "system"
+    USERS = "users"
+    AUTH = "auth"

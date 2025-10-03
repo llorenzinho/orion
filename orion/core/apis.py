@@ -29,7 +29,7 @@ core_router_v1 = APIRouter(
         },
     },
 )
-def check_connections(
+async def check_connections(
     db: Database = Depends(database),
 ) -> JSONResponse:
     unavailable = False
@@ -39,7 +39,7 @@ def check_connections(
     )
 
     try:
-        db.ping()
+        await db.ping()
     except DatabaseConnectionError as e:
         unavailable = True
         db_health.success = False

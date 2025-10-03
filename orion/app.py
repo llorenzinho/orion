@@ -9,6 +9,7 @@ from orion.core.apis import core_router_v1
 from orion.core.enums import Environment, OpenapiTags
 from orion.core.middlewares import RouterLoggingMiddleware
 from orion.core.settings import get_settings
+from orion.core.users.configure_app import configure_app
 
 logging.config.dictConfig(get_settings().log.uvicorn_log_config())
 
@@ -27,22 +28,27 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         logging.getLogger("root").info("running database migrations...")
         from orion.core.database.db import get_database
 
-        get_database().migrate()
+        await get_database().migrate()
     yield
     logging.getLogger("root").info("ORION APP STOPPED")
 
 
 app = FastAPI(
+    title="Orion",
+    version=constants.APP_VERSION,
     lifespan=lifespan,
+    debug=get_settings().env is Environment.DEVELOPMENT,
 )
 
 
 app.add_middleware(RouterLoggingMiddleware)
 
+# Routers
+configure_app(app)
 
-@app.get("/healthz", tags=[OpenapiTags.SYSTEM], status_code=status.HTTP_200_OK)
+
+@app.get("/healthz", tags=[OpenapiTags.SYSTEM], status_code=status.HTTP_204_NO_CONTENT)
 def health_check():
-    return get_settings().db.connection_string
-
+    return None
 
 app.include_router(core_router_v1, prefix="/api/v1")
