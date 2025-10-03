@@ -51,4 +51,5 @@ configure_app(app)
 def health_check():
     return None
 
+
 app.include_router(core_router_v1, prefix="/api/v1")
