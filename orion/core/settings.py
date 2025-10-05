@@ -17,26 +17,26 @@ class LogConfig(BaseModel):
     datefmt: str = "%Y-%m-%d %H:%M:%S"
 
     def uvicorn_log_config(self) -> dict:
-        return dict(
-            version=1,
-            disable_existing_loggers=False,
-            formatters={
+        return {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {
                 "default": {
                     "format": self.format,
                     "datefmt": self.datefmt,
                 },
             },
-            handlers={
+            "handlers": {
                 "default": {
                     "class": "logging.StreamHandler",
                     "formatter": "default",
                 },
             },
-            root={
+            "root": {
                 "handlers": ["default"],
                 "level": self.level.value,
             },
-            loggers={
+            "loggers": {
                 "uvicorn": {
                     "handlers": ["default"],
                     "level": self.level.value,
@@ -48,12 +48,12 @@ class LogConfig(BaseModel):
                     "propagate": False,
                 },
                 "uvicorn.access": {
-                    "handlers": [],  # Disabled to use custom middleware logging
+                    "handlers": [],
                     "level": self.level.value,
                     "propagate": False,
                 },
             },
-        )
+        }
 
 
 class DatabaseConfig(BaseModel):
