@@ -6,7 +6,7 @@ from orion.core.users.schemas import UserCreate, UserRead, UserUpdate
 from orion.core.users.service import jwt_backend
 
 
-def configure_app(app: FastAPI) -> FastAPI:
+def configure_app_auth(app: FastAPI) -> FastAPI:
 
     auth_prefix = "/auth"
 
