@@ -75,6 +75,7 @@ class AppSettings(BaseSettings):
     )
 
     env: Environment = Environment.PRODUCTION
+    session_secret: str
     log: LogConfig
     server: ServerConfig
     db: DatabaseConfig

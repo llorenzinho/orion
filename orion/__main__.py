@@ -10,4 +10,6 @@ if __name__ == "__main__":
         host=settings.server.host,
         port=settings.server.port,
         reload=settings.env is Environment.DEVELOPMENT,
+        forwarded_allow_ips="*",
+        proxy_headers=True,
     )

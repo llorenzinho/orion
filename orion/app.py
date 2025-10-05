@@ -3,8 +3,10 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, status
+from starlette.middleware.sessions import SessionMiddleware
 
 from orion.core import constants
+from orion.core.admin import mount_admin
 from orion.core.apis import core_router_v1
 from orion.core.enums import Environment, OpenapiTags
 from orion.core.middlewares import RouterLoggingMiddleware
@@ -40,8 +42,9 @@ app = FastAPI(
     debug=get_settings().env is Environment.DEVELOPMENT,
 )
 
-
 app.add_middleware(RouterLoggingMiddleware)
+app.add_middleware(SessionMiddleware, secret_key=get_settings().session_secret)
+mount_admin(app)
 
 # Routers
 configure_app(app)

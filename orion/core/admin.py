@@ -1,0 +1,75 @@
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
+from starlette.requests import Request
+from starlette.responses import Response
+from starlette_admin.auth import AdminConfig, AdminUser, AuthProvider
+from starlette_admin.contrib.sqla import Admin, ModelView
+
+from orion.core.database.db import get_database
+from orion.core.database.engine import get_engine
+from orion.core.users.database import User
+from orion.core.users.service import UserManager
+
+
+class FastAPIUsersAuth(AuthProvider):
+
+    async def login(
+        self,
+        username: str,
+        password: str,
+        remember_me: bool,
+        request: Request,
+        response: Response,
+    ) -> Response:
+        async with get_database().session as session:
+            user_db = SQLAlchemyUserDatabase(session, User)
+            user_manager = UserManager(user_db)
+            user = await user_manager.authenticate(
+                OAuth2PasswordRequestForm(username=username, password=password)
+            )
+            if user is None or not user.is_active:
+                raise HTTPException(status_code=400, detail="Invalid credentials")
+            if not user.is_superuser:
+                raise HTTPException(status_code=403, detail="User is not an admin")
+            request.session["admin_user"] = {"id": str(user.id), "email": user.email}
+            return response
+
+    async def is_authenticated(self, request) -> bool:
+        data = request.session.get("admin_user")
+        if not data:
+            return False
+        return True
+
+    def get_admin_config(self, request: Request) -> AdminConfig:
+        # Update app title according to current_user
+        # Update logo url according to current_user
+        # if user.get("company_logo_url", None):
+        #     custom_logo_url = request.url_for("static", path=user["company_logo_url"])
+        return AdminConfig(
+            app_title="admin",
+            # logo_url=custom_logo_url,
+        )
+
+    def get_admin_user(self, request: Request) -> AdminUser:
+        # photo_url = None
+        # if user["avatar"] is not None:
+        #     photo_url = request.url_for("static", path=user["avatar"])
+        return AdminUser(
+            username="admin",
+            # photo_url=photo_url,
+        )
+
+    async def logout(self, request: Request, response: Response) -> Response:
+        return response
+
+
+def mount_admin(app: FastAPI) -> FastAPI:
+    admin = Admin(get_engine(), title="Orion Admin", auth_provider=FastAPIUsersAuth())
+
+    # Create all tables in the database which are defined by Base's subclasses
+
+    admin.add_view(ModelView(User, name="Users"))
+    admin.mount_to(app)
+
+    return app

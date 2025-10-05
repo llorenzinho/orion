@@ -24,3 +24,4 @@ async def get_user_manager(user_db: SQLAlchemyUserDatabase = Depends(user_db)):
 
 fapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [jwt_backend])
 auth_user = fapi_users.current_user(active=True)
+auth_superuser = fapi_users.current_user(superuser=True)
