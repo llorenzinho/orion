@@ -6,6 +6,7 @@ from starlette.responses import Response
 from starlette_admin.auth import AdminConfig, AdminUser, AuthProvider
 from starlette_admin.contrib.sqla import Admin, ModelView
 
+from orion.core.auto.admin import list_admin_models
 from orion.core.database.db import get_database
 from orion.core.database.engine import get_engine
 from orion.core.users.database import User
@@ -88,8 +89,16 @@ def mount_admin(app: FastAPI) -> FastAPI:
     admin = Admin(get_engine(), title="Orion Admin", auth_provider=FastAPIUsersAuth())
 
     # Create all tables in the database which are defined by Base's subclasses
-
-    admin.add_view(ModelView(User, name="Users"))
+    for m, name, icon, label, identity in list_admin_models():
+        admin.add_view(
+            ModelView(
+                m,
+                name=name if name else m.__name__,
+                icon=icon,
+                label=label,
+                identity=identity,
+            )
+        )
     admin.mount_to(app)
 
     return app
