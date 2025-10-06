@@ -74,6 +74,7 @@ class AppSettings(BaseSettings):
         env_nested_delimiter="__",
     )
 
+    app_name: str = "Orion"
     env: Environment = Environment.PRODUCTION
     session_secret: str
     log: LogConfig

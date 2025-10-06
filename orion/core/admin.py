@@ -88,15 +88,14 @@ class FastAPIUsersAuth(AuthProvider):
 def mount_admin(app: FastAPI) -> FastAPI:
     admin = Admin(get_engine(), title="Orion Admin", auth_provider=FastAPIUsersAuth())
 
-    # Create all tables in the database which are defined by Base's subclasses
-    for m, name, icon, label, identity in list_admin_models():
+    for s in list_admin_models():
         admin.add_view(
             ModelView(
-                m,
-                name=name if name else m.__name__,
-                icon=icon,
-                label=label,
-                identity=identity,
+                s.model,
+                name=s.name if s.name else s.model.__name__,
+                icon=s.icon,
+                label=s.label,
+                identity=s.identity,
             )
         )
     admin.mount_to(app)

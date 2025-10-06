@@ -18,25 +18,24 @@ logging.config.dictConfig(get_settings().log.uvicorn_log_config())
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    logging.getLogger("root").info("ORION APP STARTING")
-    logging.getLogger("root").info(f"{'Environment:'.ljust(18)} {get_settings().env}")
-    logging.getLogger("root").info(
-        f"{'Service Version:'.ljust(18)} {constants.APP_VERSION}"
-    )
+    root_logger = logging.getLogger("root")
+    root_logger.debug("ORION APP STARTING")
+    root_logger.debug(f"{'Environment:'.ljust(18)} {get_settings().env}")
+    root_logger.debug(f"{'Service Version:'.ljust(18)} {constants.APP_VERSION}")
     if get_settings().env is Environment.DEVELOPMENT:
-        logging.getLogger("root").warning(
+        root_logger.warning(
             "Running in DEVELOPMENT mode. Do not use this in production!"
         )
-        logging.getLogger("root").info("running database migrations...")
+        root_logger.debug("running database migrations...")
         from orion.core.database.db import get_database
 
         await get_database().migrate()
     yield
-    logging.getLogger("root").info("ORION APP STOPPED")
+    root_logger.debug("ORION APP STOPPED")
 
 
 app = FastAPI(
-    title="Orion",
+    title=get_settings().app_name,
     version=constants.APP_VERSION,
     lifespan=lifespan,
     debug=get_settings().env is Environment.DEVELOPMENT,
