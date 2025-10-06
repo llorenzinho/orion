@@ -35,6 +35,15 @@ class FastAPIUsersAuth(AuthProvider):
                 raise HTTPException(status_code=403, detail="User is not an admin")
             token = await strategy.write_token(user)
             request.session.update({"session": token})
+            if remember_me:
+                max_age = 60 * 60 * 24 * 30
+                response.set_cookie(
+                    key="session",
+                    value=token,
+                    max_age=max_age,
+                    httponly=True,
+                    secure=False,
+                )
             return response
 
     async def is_authenticated(self, request) -> bool:
