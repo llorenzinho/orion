@@ -61,6 +61,7 @@ class FastAPIUsersAuth(AuthProvider):
         )
 
     async def logout(self, request: Request, response: Response) -> Response:
+        request.session.pop("admin_user", None)
         return response
 
 
