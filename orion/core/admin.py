@@ -9,7 +9,7 @@ from starlette_admin.contrib.sqla import Admin, ModelView
 from orion.core.database.db import get_database
 from orion.core.database.engine import get_engine
 from orion.core.users.database import User
-from orion.core.users.service import UserManager
+from orion.core.users.service import UserManager, get_jwt_strategy
 
 
 class FastAPIUsersAuth(AuthProvider):
@@ -25,6 +25,7 @@ class FastAPIUsersAuth(AuthProvider):
         async with get_database().session as session:
             user_db = SQLAlchemyUserDatabase(session, User)
             user_manager = UserManager(user_db)
+            strategy = get_jwt_strategy()
             user = await user_manager.authenticate(
                 OAuth2PasswordRequestForm(username=username, password=password)
             )
@@ -32,14 +33,22 @@ class FastAPIUsersAuth(AuthProvider):
                 raise HTTPException(status_code=400, detail="Invalid credentials")
             if not user.is_superuser:
                 raise HTTPException(status_code=403, detail="User is not an admin")
-            request.session["admin_user"] = {"id": str(user.id), "email": user.email}
+            token = await strategy.write_token(user)
+            request.session.update({"session": token})
             return response
 
     async def is_authenticated(self, request) -> bool:
-        data = request.session.get("admin_user")
-        if not data:
+        token = request.session.get("session", None)
+        if not token:
             return False
-        return True
+        async with get_database().session as session:
+            user_db = SQLAlchemyUserDatabase(session, User)
+            user_manager = UserManager(user_db)
+            strategy = get_jwt_strategy()
+            user: User = await strategy.read_token(token, user_manager)  # type: ignore
+            if user and user.is_active and user.is_superuser:
+                return True
+            return False
 
     def get_admin_config(self, request: Request) -> AdminConfig:
         # Update app title according to current_user
@@ -61,7 +70,7 @@ class FastAPIUsersAuth(AuthProvider):
         )
 
     async def logout(self, request: Request, response: Response) -> Response:
-        request.session.pop("admin_user", None)
+        request.session.pop("session", None)
         return response
 
 
