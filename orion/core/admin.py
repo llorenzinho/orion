@@ -79,7 +79,8 @@ class FastAPIUsersAuth(AuthProvider):
         )
 
     async def logout(self, request: Request, response: Response) -> Response:
-        request.session.pop("session", None)
+        request.session.clear()
+        response.delete_cookie("session")
         return response
 
 
