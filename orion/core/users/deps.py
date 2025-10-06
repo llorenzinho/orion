@@ -8,7 +8,7 @@ from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from orion.core.database.db import Database
 from orion.core.database.deps import database
 from orion.core.users.database import User
-from orion.core.users.service import UserManager, jwt_backend
+from orion.core.users.services import UserManager, jwt_backend
 
 
 async def user_db(

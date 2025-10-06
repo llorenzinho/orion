@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from orion.core.enums import OpenapiTags
 from orion.core.users.deps import fapi_users
 from orion.core.users.schemas import UserCreate, UserRead, UserUpdate
-from orion.core.users.service import jwt_backend
+from orion.core.users.services import jwt_backend
 
 
 def configure_app_auth(app: FastAPI) -> FastAPI:

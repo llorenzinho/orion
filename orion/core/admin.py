@@ -9,7 +9,7 @@ from starlette_admin.contrib.sqla import Admin, ModelView
 from orion.core.database.db import get_database
 from orion.core.database.engine import get_engine
 from orion.core.users.database import User
-from orion.core.users.service import UserManager, get_jwt_strategy
+from orion.core.users.services import UserManager, get_jwt_strategy
 
 
 class FastAPIUsersAuth(AuthProvider):
