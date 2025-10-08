@@ -17,11 +17,10 @@ def list_admin_models() -> list[AutoAdminSchema]:
         AutoAdminSchema(model=User, icon="fa fa-user")
     ]
     for module in app_package_modules:
-        mod = __import__(f"orion.app.{module.name}.database", fromlist=["*"])
+        mod = __import__(f"orion.app.{module.name}", fromlist=["*"])
         for attr in dir(mod):
             model = getattr(mod, attr)
-            if inspect.isclass(model) and issubclass(model, Base):
-                print("MODEL", model)
+            if inspect.isclass(model) and issubclass(model, Base) and model is not Base:
                 admin_models.append(
                     AutoAdminSchema(
                         model=model,
