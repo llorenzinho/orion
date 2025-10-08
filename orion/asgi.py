@@ -11,7 +11,7 @@ from orion.core.apis import core_router_v1
 from orion.core.enums import Environment, OpenapiTags
 from orion.core.middlewares import RouterLoggingMiddleware
 from orion.core.settings import get_settings
-from orion.core.users.configure_app import configure_app_auth
+from orion.core.auto.routers import configure_app
 
 logging.config.dictConfig(get_settings().log.uvicorn_log_config())
 
@@ -46,7 +46,7 @@ app.add_middleware(SessionMiddleware, secret_key=get_settings().session_secret)
 mount_admin(app)
 
 # Routers
-configure_app_auth(app)
+configure_app(app)
 
 
 @app.get("/healthz", tags=[OpenapiTags.SYSTEM], status_code=status.HTTP_204_NO_CONTENT)
