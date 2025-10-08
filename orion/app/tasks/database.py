@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+
 from orion.core.database.engine import Base
 
 

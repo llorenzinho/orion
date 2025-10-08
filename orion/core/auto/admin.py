@@ -1,4 +1,5 @@
 import inspect
+
 from orion.core.auto.schemas import AutoAdminSchema
 from orion.core.database.engine import Base
 
@@ -26,7 +27,7 @@ def list_admin_models() -> list[AutoAdminSchema]:
                         model=model,
                         icon=getattr(mod, "ADMIN_ICON", None),
                         label=getattr(mod, "ADMIN_LABEL", None),
-                        identity=getattr(mod, "ADMIN_IDENTITY", None)
+                        identity=getattr(mod, "ADMIN_IDENTITY", None),
                     )
                 )
     return admin_models
