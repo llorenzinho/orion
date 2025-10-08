@@ -2,8 +2,9 @@ from fastapi import FastAPI
 
 
 def configure_app(app: FastAPI) -> FastAPI:
-    from pathlib import Path
     import pkgutil
+    from pathlib import Path
+
     from orion.core.users.configure_app import configure_app_auth
 
     app_parent = Path(__file__).parent.parent.parent / "app"

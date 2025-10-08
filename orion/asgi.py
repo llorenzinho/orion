@@ -8,10 +8,10 @@ from starlette.middleware.sessions import SessionMiddleware
 from orion.core import constants
 from orion.core.admin import mount_admin
 from orion.core.apis import core_router_v1
+from orion.core.auto.routers import configure_app
 from orion.core.enums import Environment, OpenapiTags
 from orion.core.middlewares import RouterLoggingMiddleware
 from orion.core.settings import get_settings
-from orion.core.auto.routers import configure_app
 
 logging.config.dictConfig(get_settings().log.uvicorn_log_config())
 
