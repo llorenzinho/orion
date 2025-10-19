@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, Request, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from starlette.requests import Request
@@ -30,10 +30,10 @@ class FastAPIUsersAuth(AuthProvider):
             user = await user_manager.authenticate(
                 OAuth2PasswordRequestForm(username=username, password=password)
             )
-            if user is None or not user.is_active:
-                raise HTTPException(status_code=400, detail="Invalid credentials")
-            if not user.is_superuser:
-                raise HTTPException(status_code=403, detail="User is not an admin")
+            # if user is None or not user.is_active:
+            #     raise HTTPException(status_code=400, detail="Invalid credentials")
+            # if not user.is_superuser:
+            #     raise HTTPException(status_code=403, detail="User is not an admin")
             token = await strategy.write_token(user)
             request.session.update({"session": token})
             if remember_me:

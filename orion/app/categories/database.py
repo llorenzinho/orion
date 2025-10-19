@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 
 from orion.core.database.engine import Base
 
@@ -9,3 +10,5 @@ class Category(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(String, nullable=True)
+
+    products = relationship("Product", back_populates="category")

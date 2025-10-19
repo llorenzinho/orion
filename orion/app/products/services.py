@@ -18,6 +18,10 @@ class ProductService:
             return None
         return Product.model_validate(ret.__dict__)
 
-    async def list(self) -> list[Product]:
-        data = await self.repo.list()
+    async def list_all(self) -> list[Product]:
+        data = await self.repo.list_all()
+        return [Product.model_validate(item.__dict__) for item in data]
+
+    async def get_by_category(self, category_id: int) -> list[Product]:
+        data = await self.repo.get_by_category(category_id)
         return [Product.model_validate(item.__dict__) for item in data]

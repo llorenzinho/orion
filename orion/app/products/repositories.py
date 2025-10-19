@@ -18,7 +18,7 @@ class ProductRepo:
     def db(self) -> AsyncSession:
         return self.__db
 
-    async def list(self) -> list[Product]:
+    async def list_all(self) -> list[Product]:
         async with self.db as session:
             statement = select(Product)
             result = await session.execute(statement)
@@ -29,3 +29,9 @@ class ProductRepo:
             statement = select(Product).where(Product.id == product_id)
             result = await session.execute(statement)
             return result.scalars().first()
+
+    async def get_by_category(self, category_id: int) -> list[Product]:
+        async with self.db as session:
+            statement = select(Product).where(Product.category_id == category_id)
+            result = await session.execute(statement)
+            return list(result.scalars().all())
